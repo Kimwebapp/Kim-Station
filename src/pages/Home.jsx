@@ -19,6 +19,45 @@ const OPERATORI = [
 ];
 
 const Home = () => {
+  // Stato per attivazioni dashboard
+  const [operatore, setOperatore] = useState("all");
+  const [attivazioni, setAttivazioni] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const isAgente = !!localStorage.getItem("agenteNome");
+
+  // Fetch attivazioni dashboard
+  useEffect(() => {
+    async function fetchAttivazioni() {
+      setLoading(true);
+      setError("");
+      try {
+        let url = "/api/attivazioni";
+        if (operatore && operatore !== "all") {
+          url += `?operatore=${encodeURIComponent(operatore)}`;
+        }
+        const token = localStorage.getItem("token");
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
+        const data = await response.json();
+        if (isAgente) {
+          setAttivazioni(Array.isArray(data) ? data : []);
+        } else {
+          setAttivazioni(Array.isArray(data.attivazioni) ? data.attivazioni : []);
+        }
+      } catch (err) {
+        setError(err.message || "Errore sconosciuto");
+        setAttivazioni([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAttivazioni();
+    // eslint-disable-next-line
+  }, [operatore, isAgente]);
+
   // Redirect a login se manca il token
   React.useEffect(() => {
     if (!localStorage.getItem('token')) {
