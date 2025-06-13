@@ -1,5 +1,4 @@
 import { useState } from "react";
-import './style.css'; // importa il CSS globale come nel tuo HTML
 
 export default function Login() {
   const [showResetModal, setShowResetModal] = useState(false);
