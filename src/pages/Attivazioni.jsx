@@ -13,6 +13,8 @@ export default function Attivazioni() {
   const [offerte, setOfferte] = useState([]);
   const [offerta, setOfferta] = useState("");
   const [formDinamico, setFormDinamico] = useState(null);
+  // SKY logic
+  const [skyType, setSkyType] = useState("");
 
 
   // Redirect se manca il token
@@ -60,8 +62,23 @@ export default function Attivazioni() {
       });
   }, [operatore]);
 
-  // Carica offerte quando cambia tipologia
+  // Carica offerte quando cambia tipologia o skyType
   useEffect(() => {
+    // Operatore SKY: fetch solo se sia skyType che tipologia sono scelti
+    if (operatore.toUpperCase().includes("SKY")) {
+      if (!skyType || !tipologia) return;
+      setOfferte([]);
+      setOfferta("");
+      setFormDinamico(null);
+      fetch(`/api/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+        .then(res => res.json())
+        .then(data => setOfferte(Array.isArray(data) ? data : []))
+        .catch(() => setOfferte([]));
+      return;
+    }
+    // Altri operatori
     if (!operatore || !tipologia) return;
     setOfferte([]);
     setOfferta("");
@@ -72,7 +89,7 @@ export default function Attivazioni() {
       .then(res => res.json())
       .then(data => setOfferte(Array.isArray(data) ? data : []))
       .catch(() => setOfferte([]));
-  }, [operatore, tipologia]);
+  }, [operatore, tipologia, skyType]);
 
   // Carica form dinamico quando cambia offerta
   useEffect(() => {
@@ -125,14 +142,27 @@ export default function Attivazioni() {
                 </div>
                 <div className="form-container">
                   <div className="form-group">
-                    <label htmlFor="operatore-menu" className="form-label">1. Scegli operatore</label>
-                    <select id="operatore-menu" className="form-select" value={operatore} onChange={e => setOperatore(e.target.value)}>
-                      <option value="">-- Scegli operatore --</option>
-                      {operatori.map(op => (
-                        <option key={op.id || op.value || op} value={op.id || op.value || op}>{op.nome || op.label || op}</option>
-                      ))}
-                    </select>
-                  </div>
+  <label htmlFor="operatore-menu" className="form-label">1. Scegli operatore</label>
+  <select id="operatore-menu" className="form-select" value={operatore} onChange={e => { setOperatore(e.target.value); setSkyType(""); }}>
+    <option value="">-- Scegli operatore --</option>
+    {operatori.map(op => (
+      <option key={op.id || op.value || op} value={op.id || op.value || op}>{op.nome || op.label || op}</option>
+    ))}
+  </select>
+</div>
+{/* SKY: sottoselezione */}
+{operatore.toUpperCase().includes("SKY") && (
+  <div className="form-group" style={{ marginTop: 15 }}>
+    <label htmlFor="sky-type" style={{ display: 'block', marginBottom: 8, fontWeight: 500 }}>Tipo SKY</label>
+    <select id="sky-type" className="form-select" value={skyType} onChange={e => setSkyType(e.target.value)}>
+      <option value="">-- Seleziona tipo SKY --</option>
+      <option value="3">SKY TV</option>
+      <option value="8">Sky Mobile</option>
+      <option value="12">Sky Business</option>
+      <option value="14">SKY BAR</option>
+    </select>
+  </div>
+)}
                   <div id="step-tipologia" className="form-group" style={{display: operatore ? 'block' : 'none'}}>
   <label htmlFor="tipologia-menu" className="form-label">2. Scegli tipologia</label>
   {tipologieLoading ? (
@@ -154,14 +184,14 @@ export default function Attivazioni() {
   )}
 </div>
                   <div id="step-offerta" className="form-group" style={{display: offerte.length > 0 ? 'block' : 'none'}}>
-                    <label htmlFor="offerta-menu" className="form-label">3. Scegli offerta</label>
-                    <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
-                      <option value="">-- Scegli offerta --</option>
-                      {offerte.map(o => (
-                        <option key={o.id || o.value || o} value={o.id || o.value || o}>{o.nome || o.label || o}</option>
-                      ))}
-                    </select>
-                  </div>
+  <label htmlFor="offerta-menu" className="form-label">3. Scegli offerta</label>
+  <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
+    <option value="">-- Scegli offerta --</option>
+    {offerte.map(o => (
+      <option key={o.id || o.value || o} value={o.id || o.value || o}>{o.nome || o.label || o}</option>
+    ))}
+  </select>
+</div>
                   <div id="form-dinamico" className="form-dynamic">
                     {formDinamico}
                   </div>
