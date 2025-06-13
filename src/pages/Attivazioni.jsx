@@ -70,7 +70,7 @@ export default function Attivazioni() {
       setOfferte([]);
       setOfferta("");
       setFormDinamico(null);
-      fetch(`/api/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}`, {
+      fetch(`/api/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then(res => res.json())
@@ -83,7 +83,7 @@ export default function Attivazioni() {
     setOfferte([]);
     setOfferta("");
     setFormDinamico(null);
-    fetch(`/api/offerte?operatore=${encodeURIComponent(operatore)}&tipologia=${encodeURIComponent(tipologia)}`, {
+    fetch(`/api/offerte?operatore=${encodeURIComponent(operatore)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => res.json())
@@ -183,14 +183,18 @@ export default function Attivazioni() {
     </select>
   )}
 </div>
-                  <div id="step-offerta" className="form-group" style={{display: offerte.length > 0 ? 'block' : 'none'}}>
+                  <div id="step-offerta" className="form-group" style={{display: (tipologia && ((operatore.toUpperCase().includes('SKY') && skyType) || !operatore.toUpperCase().includes('SKY'))) ? 'block' : 'none'}}>
   <label htmlFor="offerta-menu" className="form-label">3. Scegli offerta</label>
-  <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
-    <option value="">-- Scegli offerta --</option>
-    {offerte.map(o => (
-      <option key={o.id || o.value || o} value={o.id || o.value || o}>{o.nome || o.label || o}</option>
-    ))}
-  </select>
+  {offerte.length === 0 ? (
+    <div style={{padding:'8px 0', color:'#888'}}>Nessuna offerta disponibile</div>
+  ) : (
+    <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
+      <option value="">-- Scegli offerta --</option>
+      {offerte.map(o => (
+        <option key={o.id || o.value || o} value={o.id || o.value || o}>{o.nome || o.label || o}</option>
+      ))}
+    </select>
+  )}
 </div>
                   <div id="form-dinamico" className="form-dynamic">
                     {formDinamico}
