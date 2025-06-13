@@ -42,7 +42,7 @@ export default function Login() {
             <h2 className="login-title">Accedi al tuo account</h2>
             <input type="email" id="email" name="email" placeholder="Email" required />
             <input type="password" id="password" name="password" placeholder="Password" required />
-            <button type="button" className="forgot-password" id="showResetPassword" onClick={openResetModal} style={{background:'none',border:'none',padding:0,cursor:'pointer'}}>Password dimenticata?</button>
+            <button type="button" className="forgot-password" id="showResetPassword" onClick={() => setShowResetModal(true)} style={{background:'none',border:'none',padding:0,cursor:'pointer'}}>Password dimenticata?</button>
             <button type="submit" className="login-btn">Accedi</button>
             <div id="loginError" style={{ color: 'red', marginTop: '10px' }}>{loginError}</div>
           </form>
