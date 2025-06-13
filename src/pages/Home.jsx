@@ -62,7 +62,7 @@ export default function Dashboard() {
                   <li><a href="ricariche.html"><span className="icon"><img src="Icons/Ricariche.png" alt="" /></span>Reportistica</a></li>
                   <li><a href="assistenza.html"><span className="icon"><img src="Icons/Storico.png" alt="" /></span>Assistenza</a></li>
                   <li><a href="documentazione.html"><span className="icon"><img src="Icons/Documentazione.png" alt="" /></span>Documentazione</a></li>
-                  <li><a href="#" onClick={(e) => { e.preventDefault(); openChatbox(); }}><span className="icon"><img src="Icons/ChatBot.png" alt="" /></span>ChatBot</a></li>
+                  <li><a href="#" onClick={e => e.preventDefault()}><span className="icon"><img src="Icons/ChatBot.png" alt="" /></span>ChatBot</a></li>
                 </ul>
               </nav>
               <div className="sidebar-bottom">
