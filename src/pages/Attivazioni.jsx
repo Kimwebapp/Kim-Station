@@ -78,7 +78,7 @@ export default function Attivazioni() {
     function getOperatoreId(val) {
       if (!val) return '';
       // Cerca id numerico tra gli operatori
-      const found = operatori.find(op => (op.id || op.value || op) == val || op.nome === val || op.label === val);
+      const found = operatori.find(op => (op.id || op.value || op) === val || op.nome === val || op.label === val);
       if (found && found.id) return found.id;
       if (found && found.value && !isNaN(found.value)) return found.value;
       // fallback: se già numerico
