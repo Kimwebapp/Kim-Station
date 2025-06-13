@@ -11,9 +11,7 @@ export default function Attivazioni() {
   const [offerte, setOfferte] = useState([]);
   const [offerta, setOfferta] = useState("");
   const [formDinamico, setFormDinamico] = useState(null);
-  const [attivazioni, setAttivazioni] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
 
   // Redirect se manca il token
   useEffect(() => {
