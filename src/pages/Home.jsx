@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import './style.css'; // importa il CSS globale
 // Se hai componenti React per i chart o Stripe, li integrerai dopo.
 
 export default function Dashboard() {
