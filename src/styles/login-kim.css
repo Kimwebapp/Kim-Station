@@ -1,0 +1,111 @@
+/* Login Kim Style: fedele allo screenshot fornito */
+.login-kim-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: radial-gradient(ellipse at top left, #6eb4ff 0%, #377dce 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-kim-container {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 64, 128, 0.10);
+  padding: 48px 36px 36px 36px;
+  width: 100%;
+  max-width: 370px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-kim-logo {
+  margin-bottom: 24px;
+}
+
+.login-kim-title {
+  color: #1e4ddb;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 28px;
+  text-align: center;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.login-kim-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-kim-input-group {
+  position: relative;
+}
+
+.login-kim-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: 'Noto Sans', sans-serif;
+  background: #f7faff;
+  color: #1e4ddb;
+  outline: none;
+  transition: border 0.2s;
+}
+.login-kim-input:focus {
+  border: 1.5px solid #1e4ddb;
+  background: #fff;
+}
+
+.login-kim-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #b3c6e0;
+  font-size: 1.2em;
+}
+
+.login-kim-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.login-kim-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #1e4ddb;
+}
+
+.login-kim-btn {
+  width: 100%;
+  padding: 13px 0;
+  background: linear-gradient(90deg, #1e4ddb 60%, #377dce 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(30,77,219,0.08);
+}
+.login-kim-btn:active,
+.login-kim-btn:focus {
+  background: #153cb2;
+}
+
+@media (max-width: 500px) {
+  .login-kim-container {
+    padding: 28px 8px 24px 8px;
+    max-width: 98vw;
+  }
+}
