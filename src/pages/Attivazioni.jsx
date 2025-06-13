@@ -125,11 +125,7 @@ export default function Attivazioni() {
       });
   }, [operatore, tipologia, skyType, operatori]);
 
-  // Carica form dinamico quando cambia offerta
-  useEffect(() => {
-    if (!offerta) return;
-    setFormDinamico(<div style={{padding:20}}>Form dinamico per l'offerta: <b>{offerta}</b> (TODO)</div>);
-  }, [offerta]);
+
 
   // Logout
   function handleLogout() {
