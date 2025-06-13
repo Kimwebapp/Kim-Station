@@ -5,15 +5,29 @@ export default function Login() {
   const [loginError, setLoginError] = useState("");
   const [resetPasswordMsg, setResetPasswordMsg] = useState("");
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-
-    // Qui puoi mettere la tua logica di login
-    console.log("Login con", email, password);
-    setLoginError(""); // oppure mostra un messaggio di errore se necessario
+    setLoginError("");
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.token) {
+        setLoginError(data.error || "Credenziali non valide");
+        return;
+      }
+      localStorage.setItem("token", data.token);
+      window.location.href = "/";
+    } catch (err) {
+      setLoginError("Errore di rete");
+    }
   };
+
 
   const handleResetPasswordSubmit = (e) => {
     e.preventDefault();
