@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import "../styles/main.css";
 
 const OPERATORI = [
@@ -120,7 +121,7 @@ const Home = () => {
             <nav className="sidebar-menu">
               <ul>
                 <li className="active">
-                  <a href="/">
+                  <Link to="/">
                     <span className="icon">
                       <img src="/Icons/Dashboard.png" alt="Dashboard" />
                     </span>
