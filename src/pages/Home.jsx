@@ -125,47 +125,47 @@ const Home = () => {
                       <img src="/Icons/Dashboard.png" alt="Dashboard" />
                     </span>
                     Home
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/attivazioni">
+                  <Link to="/attivazioni">
                     <span className="icon">
                       <img src="/Icons/AttivazioniDef.png" alt="" />
                     </span>
                     Attivazioni
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/prodotti">
+                  <Link to="/prodotti">
                     <span className="icon">
                       <img src="/Icons/Prodotti.png" alt="" />
                     </span>
                     Prodotti
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/ricariche">
+                  <Link to="/reportistica">
                     <span className="icon">
                       <img src="/Icons/Ricariche.png" alt="" />
                     </span>
                     Reportistica
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/assistenza">
+                  <Link to="/assistenza">
                     <span className="icon">
                       <img src="/Icons/Storico.png" alt="" />
                     </span>
                     Assistenza
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/documentazione">
+                  <Link to="/documentazione">
                     <span className="icon">
                       <img src="/Icons/Documentazione.png" alt="" />
                     </span>
                     Documentazione
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <button type="button" className="sidebar-link" style={{background: 'none', border: 0, padding: 0, width: '100%', textAlign: 'left'}} onClick={() => { /* openChatbox(); */ }}>
@@ -586,6 +586,7 @@ function AndamentoMensileCard() {
         if (chartInstance) {
           chartInstance.destroy();
         }
+        if (!chartRef.current) throw new Error("Canvas non trovato");
         const ctx = chartRef.current.getContext("2d");
         const newChart = new Chart(ctx, {
           type: "line",
