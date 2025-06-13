@@ -154,7 +154,12 @@ const Home = () => {
               </ul>
             </nav>
             <div className="sidebar-bottom">
-              <button className="login-link" onClick={() => window.location.href = "/Account/Reset"}>Password dimenticata?</button>
+              <button className="logout-btn" onClick={() => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("dealerName");
+  localStorage.removeItem("agenteNome");
+  window.location.href = "/login";
+}}>Logout</button>
             </div>
           </aside>
 
