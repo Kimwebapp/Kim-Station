@@ -9,7 +9,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:5000/api/:splat"
+  to = "https://staging3.kimweb.agency/api/:splat"
   status = 200
 
 [[redirects]]
