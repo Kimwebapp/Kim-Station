@@ -1,0 +1,54 @@
+.offerte-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 28px;
+  margin-bottom: 20px;
+}
+.offerta-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(30,77,219,0.07), 0 1.5px 3px rgba(0,0,0,0.03);
+  padding: 24px 18px 16px 18px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border 0.2s;
+  border: 2px solid transparent;
+  outline: none;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+.offerta-card.selezionata, .offerta-card:focus {
+  border: 2px solid #1e4ddb;
+  box-shadow: 0 2px 16px rgba(30,77,219,0.18);
+}
+.offerta-card h3 {
+  font-size: 1.2em;
+  margin: 0 0 8px 0;
+}
+.offerta-card p {
+  font-size: 0.98em;
+  color: #444;
+  margin-bottom: 8px;
+}
+.offerta-card strong {
+  color: #1e4ddb;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.attiva-offerta-btn {
+  margin-top: auto;
+  border: none;
+  background: #1e4ddb;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.attiva-offerta-btn:hover, .attiva-offerta-btn:focus {
+  background: #12308a;
+}

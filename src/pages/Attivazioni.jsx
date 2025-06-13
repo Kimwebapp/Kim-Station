@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/main.css";
+import OffertaCard from "../components/OffertaCard";
+import DynamicForm from "../components/DynamicForm";
+import "../styles/offerte.css";
 
 export default function Attivazioni() {
   const navigate = useNavigate();
@@ -30,8 +33,14 @@ export default function Attivazioni() {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => res.json())
-      .then(data => setOperatori(Array.isArray(data) ? data : []))
-      .catch(() => setOperatori([]));
+      .then(data => {
+        console.log('[DEBUG] operatori fetch:', data);
+        setOperatori(Array.isArray(data) ? data : []);
+      })
+      .catch(err => {
+        setOperatori([]);
+        console.error('[DEBUG] errore fetch operatori:', err);
+      });
   }, []);
 
   // Carica tipologie quando cambia operatore
@@ -52,20 +61,33 @@ export default function Attivazioni() {
         return res.json();
       })
       .then(data => {
+        console.log('[DEBUG] tipologie fetch:', data);
         setTipologie(Array.isArray(data) ? data : []);
         setTipologieLoading(false);
       })
       .catch(err => {
         setTipologie([]);
         setTipologieLoading(false);
-        setTipologieError("Errore nel caricamento tipologie");
+        setTipologieError("Errore nel caricamento tipologie: " + (err?.message || ''));
+        console.error('[DEBUG] errore fetch tipologie:', err);
       });
   }, [operatore]);
 
   // Carica offerte quando cambia tipologia o skyType
   useEffect(() => {
+    // Helper per ricavare sempre id numerico se disponibile
+    function getOperatoreId(val) {
+      if (!val) return '';
+      // Cerca id numerico tra gli operatori
+      const found = operatori.find(op => (op.id || op.value || op) == val || op.nome === val || op.label === val);
+      if (found && found.id) return found.id;
+      if (found && found.value && !isNaN(found.value)) return found.value;
+      // fallback: se già numerico
+      if (!isNaN(val)) return val;
+      return val;
+    }
     // Operatore SKY: fetch solo se sia skyType che tipologia sono scelti
-    if (operatore.toUpperCase().includes("SKY")) {
+    if (operatore && operatore.toUpperCase().includes("SKY")) {
       if (!skyType || !tipologia) return;
       setOfferte([]);
       setOfferta("");
@@ -74,22 +96,35 @@ export default function Attivazioni() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then(res => res.json())
-        .then(data => setOfferte(Array.isArray(data) ? data : []))
-        .catch(() => setOfferte([]));
+        .then(data => {
+          console.log('[DEBUG] offerte fetch (SKY):', data);
+          setOfferte(Array.isArray(data) ? data : []);
+        })
+        .catch(err => {
+          setOfferte([]);
+          console.error('[DEBUG] errore fetch offerte (SKY):', err);
+        });
       return;
     }
-    // Altri operatori
+    // Altri operatori: usa sempre id numerico se disponibile
     if (!operatore || !tipologia) return;
     setOfferte([]);
     setOfferta("");
     setFormDinamico(null);
-    fetch(`/api/offerte?operatore=${encodeURIComponent(operatore)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
+    const operatoreId = getOperatoreId(operatore);
+    fetch(`/api/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => res.json())
-      .then(data => setOfferte(Array.isArray(data) ? data : []))
-      .catch(() => setOfferte([]));
-  }, [operatore, tipologia, skyType]);
+      .then(data => {
+        console.log('[DEBUG] offerte fetch:', data);
+        setOfferte(Array.isArray(data) ? data : []);
+      })
+      .catch(err => {
+        setOfferte([]);
+        console.error('[DEBUG] errore fetch offerte:', err);
+      });
+  }, [operatore, tipologia, skyType, operatori]);
 
   // Carica form dinamico quando cambia offerta
   useEffect(() => {
@@ -145,9 +180,11 @@ export default function Attivazioni() {
   <label htmlFor="operatore-menu" className="form-label">1. Scegli operatore</label>
   <select id="operatore-menu" className="form-select" value={operatore} onChange={e => { setOperatore(e.target.value); setSkyType(""); }}>
     <option value="">-- Scegli operatore --</option>
-    {operatori.map(op => (
-      <option key={op.id || op.value || op} value={op.id || op.value || op}>{op.nome || op.label || op}</option>
-    ))}
+    {operatori.map(op => {
+      const id = op.id || op.value || op;
+      const label = op.nome || op.label || op.Nome || op.Label || op;
+      return <option key={id} value={id}>{label}</option>;
+    })} 
   </select>
 </div>
 {/* SKY: sottoselezione */}
@@ -178,27 +215,46 @@ export default function Attivazioni() {
           if (t.toUpperCase() === "BUSINESS") return <option key="BUS" value="BUS">Business</option>;
           return <option key={t} value={t}>{t}</option>;
         }
-        return <option key={t.id || t.value || t} value={t.id || t.value || t}>{t.nome || t.label || t}</option>;
-      })}
+        // fallback robusto
+        const id = t.id || t.value || t.ID || t;
+        const label = t.nome || t.label || t.Nome || t.Label || t;
+        return <option key={id} value={id}>{label}</option>;
+      })} 
     </select>
   )}
 </div>
                   <div id="step-offerta" className="form-group" style={{display: (tipologia && ((operatore.toUpperCase().includes('SKY') && skyType) || !operatore.toUpperCase().includes('SKY'))) ? 'block' : 'none'}}>
-  <label htmlFor="offerta-menu" className="form-label">3. Scegli offerta</label>
+  <label className="form-label">3. Scegli offerta</label>
   {offerte.length === 0 ? (
     <div style={{padding:'8px 0', color:'#888'}}>Nessuna offerta disponibile</div>
   ) : (
-    <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
-      <option value="">-- Scegli offerta --</option>
-      {offerte.map(o => (
-        <option key={o.id || o.value || o} value={o.id || o.value || o}>{o.nome || o.label || o}</option>
-      ))}
-    </select>
+    // Se è selezionata un'offerta, mostra DynamicForm, altrimenti mostra la griglia offerte
+    offerta && offerta !== "" ? (
+      <DynamicForm
+        offerta={offerte.find(o => (o.id || o.value || o.ID || o) === offerta)}
+        onClose={() => {
+          setOfferta("");
+          setFormDinamico(null);
+        }}
+      />
+    ) : (
+      <div className="offerte-grid">
+        {offerte.map(o => (
+          <OffertaCard
+            key={o.id || o.value || o.ID || o}
+            offerta={o}
+            selected={false}
+            onSelect={() => {
+              setOfferta(o.id || o.value || o.ID || o);
+              setFormDinamico(null);
+            }}
+          />
+        ))}
+      </div>
+    )
   )}
 </div>
-                  <div id="form-dinamico" className="form-dynamic">
-                    {formDinamico}
-                  </div>
+                  {/* Il vecchio placeholder formDinamico non serve più, DynamicForm è gestito sopra */}
                 </div>
                 {/* Tabella attivazioni (placeholder, da popolare lato backend se serve) */}
                 <div className="table-responsive">
