@@ -168,12 +168,12 @@ const Home = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#" onClick={() => { /* openChatbox(); */ return false; }}>
+                  <button type="button" className="sidebar-link" style={{background: 'none', border: 0, padding: 0, width: '100%', textAlign: 'left'}} onClick={() => { /* openChatbox(); */ }}>
                     <span className="icon">
                       <img src="/Icons/ChatBot.png" alt="" />
                     </span>
                     ChatBot
-                  </a>
+                  </button>
                 </li>
               </ul>
             </nav>
