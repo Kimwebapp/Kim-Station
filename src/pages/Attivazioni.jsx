@@ -15,7 +15,6 @@ export default function Attivazioni() {
   const [tipologieError, setTipologieError] = useState("");
   const [offerte, setOfferte] = useState([]);
   const [offerta, setOfferta] = useState("");
-  const [formDinamico, setFormDinamico] = useState(null);
   // SKY logic
   const [skyType, setSkyType] = useState("");
 
@@ -50,7 +49,7 @@ export default function Attivazioni() {
     setTipologia("");
     setOfferte([]);
     setOfferta("");
-    setFormDinamico(null);
+    
     setTipologieLoading(true);
     setTipologieError("");
     fetch(`/api/tipologie?operatore=${encodeURIComponent(operatore)}`, {
@@ -91,7 +90,7 @@ export default function Attivazioni() {
       if (!skyType || !tipologia) return;
       setOfferte([]);
       setOfferta("");
-      setFormDinamico(null);
+      
       fetch(`/api/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
@@ -110,7 +109,7 @@ export default function Attivazioni() {
     if (!operatore || !tipologia) return;
     setOfferte([]);
     setOfferta("");
-    setFormDinamico(null);
+    
     const operatoreId = getOperatoreId(operatore);
     fetch(`/api/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -234,7 +233,7 @@ export default function Attivazioni() {
         offerta={offerte.find(o => (o.id || o.value || o.ID || o) === offerta)}
         onClose={() => {
           setOfferta("");
-          setFormDinamico(null);
+          
         }}
       />
     ) : (
@@ -246,7 +245,7 @@ export default function Attivazioni() {
             selected={false}
             onSelect={() => {
               setOfferta(o.id || o.value || o.ID || o);
-              setFormDinamico(null);
+              
             }}
           />
         ))}

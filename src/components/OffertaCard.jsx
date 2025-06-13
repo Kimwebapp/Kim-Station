@@ -2,7 +2,7 @@ import React from "react";
 import "../styles/offerte.css";
 
 export default function OffertaCard({ offerta, selected, onSelect }) {
-  const id = offerta.id || offerta.value || offerta.ID || offerta;
+
   const titolo = offerta.nome || offerta.label || offerta.Nome || offerta.Label || offerta.Titolo || "";
   const descrizione = offerta.DescrizioneBreve || offerta.descrizioneBreve || offerta.descrizione || "";
   const crediti = offerta.Crediti || offerta.crediti || "";
