@@ -8,6 +8,8 @@ export default function Attivazioni() {
   const [operatore, setOperatore] = useState("");
   const [tipologie, setTipologie] = useState([]);
   const [tipologia, setTipologia] = useState("");
+  const [tipologieLoading, setTipologieLoading] = useState(false);
+  const [tipologieError, setTipologieError] = useState("");
   const [offerte, setOfferte] = useState([]);
   const [offerta, setOfferta] = useState("");
   const [formDinamico, setFormDinamico] = useState(null);
@@ -38,12 +40,24 @@ export default function Attivazioni() {
     setOfferte([]);
     setOfferta("");
     setFormDinamico(null);
+    setTipologieLoading(true);
+    setTipologieError("");
     fetch(`/api/tipologie?operatore=${encodeURIComponent(operatore)}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
-      .then(res => res.json())
-      .then(data => setTipologie(Array.isArray(data) ? data : []))
-      .catch(() => setTipologie([]));
+      .then(res => {
+        if (!res.ok) throw new Error('Errore fetch tipologie: ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        setTipologie(Array.isArray(data) ? data : []);
+        setTipologieLoading(false);
+      })
+      .catch(err => {
+        setTipologie([]);
+        setTipologieLoading(false);
+        setTipologieError("Errore nel caricamento tipologie");
+      });
   }, [operatore]);
 
   // Carica offerte quando cambia tipologia
@@ -119,20 +133,26 @@ export default function Attivazioni() {
                       ))}
                     </select>
                   </div>
-                  <div id="step-tipologia" className="form-group" style={{display: tipologie.length > 0 ? 'block' : 'none'}}>
-                    <label htmlFor="tipologia-menu" className="form-label">2. Scegli tipologia</label>
-                    <select id="tipologia-menu" className="form-select" value={tipologia} onChange={e => setTipologia(e.target.value)}>
-                      <option value="">-- Scegli tipologia --</option>
-                      {tipologie.map(t => {
-                        if (typeof t === "string") {
-                          if (t.toUpperCase() === "RESIDENZIALE") return <option key="RES" value="RES">Residenziale</option>;
-                          if (t.toUpperCase() === "BUSINESS") return <option key="BUS" value="BUS">Business</option>;
-                          return <option key={t} value={t}>{t}</option>;
-                        }
-                        return <option key={t.id || t.value || t} value={t.id || t.value || t}>{t.nome || t.label || t}</option>;
-                      })}
-                    </select>
-                  </div>
+                  <div id="step-tipologia" className="form-group" style={{display: operatore ? 'block' : 'none'}}>
+  <label htmlFor="tipologia-menu" className="form-label">2. Scegli tipologia</label>
+  {tipologieLoading ? (
+    <div style={{padding:'8px 0'}}>Caricamento tipologie...</div>
+  ) : tipologieError ? (
+    <div style={{color:'red', padding:'8px 0'}}>{tipologieError}</div>
+  ) : (
+    <select id="tipologia-menu" className="form-select" value={tipologia} onChange={e => setTipologia(e.target.value)} disabled={tipologieLoading || tipologie.length === 0}>
+      <option value="">{tipologie.length === 0 ? "Nessuna tipologia disponibile" : "-- Scegli tipologia --"}</option>
+      {tipologie.map(t => {
+        if (typeof t === "string") {
+          if (t.toUpperCase() === "RESIDENZIALE") return <option key="RES" value="RES">Residenziale</option>;
+          if (t.toUpperCase() === "BUSINESS") return <option key="BUS" value="BUS">Business</option>;
+          return <option key={t} value={t}>{t}</option>;
+        }
+        return <option key={t.id || t.value || t} value={t.id || t.value || t}>{t.nome || t.label || t}</option>;
+      })}
+    </select>
+  )}
+</div>
                   <div id="step-offerta" className="form-group" style={{display: offerte.length > 0 ? 'block' : 'none'}}>
                     <label htmlFor="offerta-menu" className="form-label">3. Scegli offerta</label>
                     <select id="offerta-menu" className="form-select" value={offerta} onChange={e => setOfferta(e.target.value)}>
