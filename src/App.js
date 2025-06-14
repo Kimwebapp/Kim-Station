@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Attivazioni from "./pages/Attivazioni";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import Layout from "./components/Layout";
@@ -19,7 +20,7 @@ function App() {
         <Route path="/Account/Reset" element={<ResetPassword />} />
         <Route
           path="/"
-          element={<RequireAuth><Layout><Attivazioni /></Layout></RequireAuth>}
+          element={<RequireAuth><Layout><Home /></Layout></RequireAuth>}
         />
         <Route
           path="/attivazioni"
