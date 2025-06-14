@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import FileUploadField from "./FileUploadField";
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 // Campo generico per input dinamici
 function DynamicField({ campo, value, onChange }) {
@@ -92,7 +93,7 @@ export default function DynamicForm({ offerta, onClose }) {
     const token = localStorage.getItem("token");
     console.log('[DEBUG][DynamicForm] Token:', token);
     console.log('[DEBUG][DynamicForm] Template name:', templateName);
-    fetch(`/api/template-offerta/${encodeURIComponent(templateName)}`, {
+    fetch(`${API_URL}/template-offerta/${encodeURIComponent(templateName)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(async res => {

@@ -28,7 +28,7 @@ export default function Attivazioni() {
 
   // Carica operatori all'avvio
   useEffect(() => {
-    fetch("/api/operatori", {
+    fetch(`${API_URL}/operatori`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => res.json())
@@ -55,7 +55,7 @@ export default function Attivazioni() {
     setTipologieError("");
     // Se SKY, usa skyType come parametro operatore; altrimenti usa operatore
     const paramOperatore = operatore.toUpperCase().includes('SKY') ? skyType : operatore;
-    fetch(`/api/tipologie?operatore=${encodeURIComponent(paramOperatore)}`, {
+    fetch(`${API_URL}/tipologie?operatore=${encodeURIComponent(paramOperatore)}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => {
@@ -94,7 +94,7 @@ export default function Attivazioni() {
       setOfferte([]);
       setOfferta("");
       
-      fetch(`/api/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
+      fetch(`${API_URL}/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
         .then(res => res.json())
@@ -114,7 +114,7 @@ export default function Attivazioni() {
     setOfferta("");
     
     const operatoreId = getOperatoreId(operatore);
-    fetch(`/api/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
+    fetch(`${API_URL}/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => res.json())
