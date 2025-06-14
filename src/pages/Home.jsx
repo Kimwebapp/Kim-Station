@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 // COMPONENTE ORDINI
