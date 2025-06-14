@@ -78,7 +78,7 @@ export default function CreditoPlafondBox() {
               <Elements stripe={stripePromise}>
                 <StripeRicaricaModal
                   importo={importo}
-                  onClose={()=>{setShowModal(false);setMsgPagamento('');setImporto(null);}}
+                  onClose={()=>{setShowModal(false);setImporto(null);}}
                   onSuccess={()=>{fetchCredito();}}
                   onError={()=>{}}
                   pagamentoInCorso={pagamentoInCorso}
