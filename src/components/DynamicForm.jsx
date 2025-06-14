@@ -60,11 +60,10 @@ function ConfirmModal({ open, onConfirm, onCancel }) {
   );
 }
 
-export default function DynamicForm({ offerta, onClose }) {
-  const [template, setTemplate] = useState(null);
+export default function DynamicForm({ offerta, template, templateLoading, templateError, onSubmit, onClose }) {
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const formRef = useRef();
 
@@ -84,55 +83,53 @@ export default function DynamicForm({ offerta, onClose }) {
   }, [formData, onClose]);
 
   useEffect(() => {
-    if (!offerta) return;
-    setLoading(true);
-    setError("");
     setFormData({});
-    // Recupera il template: puoi cambiare endpoint se necessario
-    const templateName = offerta.TemplateDatiOfferta || offerta.template || offerta.Template;
-    const token = localStorage.getItem("token");
-    console.log('[DEBUG][DynamicForm] Token:', token);
-    console.log('[DEBUG][DynamicForm] Template name:', templateName);
-    fetch(`${API_URL}/template-offerta/${encodeURIComponent(templateName)}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async res => {
-        console.log('[DEBUG][DynamicForm] Fetch response:', res.status, res.statusText, res.headers);
-        if (!res.ok) {
-          let errorBody = '';
-          try { errorBody = await res.text(); } catch {}
-          console.error('[DEBUG][DynamicForm] Fetch error body:', errorBody);
-          if (res.status === 401) {
-            setError("Non autorizzato (401). Il token è mancante, scaduto o non valido. Effettua di nuovo il login.\n" + errorBody);
-            setLoading(false);
-            return;
-          }
-          setError("Errore fetch template: " + res.status + " " + res.statusText + "\n" + errorBody);
-          setLoading(false);
-          return;
-        }
-        return res.json();
-      })
-      .then(data => {
-        if (!data) return;
-        setTemplate(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError("Errore caricamento template: " + (err?.message || ""));
-        setLoading(false);
-        console.error('[DEBUG][DynamicForm] Catch error:', err);
-      });
-  }, [offerta]);
+    setFieldErrors({});
+    setSubmitError("");
+  }, [template]);
 
   function handleChange(name, value) {
     setFormData(fd => ({ ...fd, [name]: value }));
+    setFieldErrors(errors => ({ ...errors, [name]: undefined }));
+  }
+
+  function validate() {
+    const errors = {};
+    if (!template || !Array.isArray(template.campi)) return errors;
+    for (const campo of template.campi) {
+      const val = formData[campo.name];
+      if (campo.required && (val === undefined || val === null || val === "" || (campo.type === "checkbox" && !val))) {
+        errors[campo.name] = "Campo obbligatorio";
+      }
+      if (campo.type === "email" && val && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) {
+        errors[campo.name] = "Email non valida";
+      }
+      if (campo.type === "number" && val !== undefined && val !== "" && isNaN(Number(val))) {
+        errors[campo.name] = "Deve essere un numero";
+      }
+      if (campo.minLength && val && val.length < campo.minLength) {
+        errors[campo.name] = `Minimo ${campo.minLength} caratteri`;
+      }
+      if (campo.maxLength && val && val.length > campo.maxLength) {
+        errors[campo.name] = `Massimo ${campo.maxLength} caratteri`;
+      }
+      if (campo.pattern && val && !(new RegExp(campo.pattern).test(val))) {
+        errors[campo.name] = "Formato non valido";
+      }
+    }
+    return errors;
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    // TODO: submit logica
-    alert("Form inviato! (TODO)");
+    const errors = validate();
+    setFieldErrors(errors);
+    setSubmitError("");
+    if (Object.keys(errors).length > 0) {
+      setSubmitError("Per favore correggi i campi evidenziati.");
+      return;
+    }
+    onSubmit(formData);
   }
 
   function handleAnnulla(e) {
@@ -149,8 +146,8 @@ export default function DynamicForm({ offerta, onClose }) {
     onClose();
   }
 
-  if (loading) return <div style={{padding:20}}>Caricamento form...</div>;
-  if (error) return <div style={{color:'red',padding:20}}>{error}</div>;
+  if (templateLoading) return <div style={{padding:20}}>Caricamento form...</div>;
+  if (templateError) return <div style={{color:'red',padding:20}}>{templateError}</div>;
   if (!template) return null;
 
   return (
@@ -158,13 +155,21 @@ export default function DynamicForm({ offerta, onClose }) {
       <form onSubmit={handleSubmit} style={{padding:20}} ref={formRef}>
         <h2>{template.titolo || template.title || "Form Attivazione"}</h2>
         {Array.isArray(template.campi) && template.campi.map(campo => (
-          <DynamicField
-            key={campo.name || campo.label}
-            campo={campo}
-            value={formData[campo.name]}
-            onChange={val => handleChange(campo.name, val)}
-          />
+          <div key={campo.name || campo.label} style={{marginBottom:8}}>
+            <DynamicField
+              campo={campo}
+              value={formData[campo.name]}
+              onChange={val => handleChange(campo.name, val)}
+            />
+            {fieldErrors[campo.name] && (
+              <div style={{color:'red', fontSize:'0.95em', marginTop:2, marginLeft:4}}>{fieldErrors[campo.name]}</div>
+            )}
+          </div>
         ))}
+        {submitError && (
+          <div style={{color:'red', marginTop:8, marginBottom:8}}>{submitError}</div>
+        )}
+        
         <div style={{marginTop:20, display:'flex', gap:12}}>
           <button type="submit" className="btn btn-primary">Invia</button>
           <button type="button" className="btn btn-secondary" onClick={handleAnnulla}>Annulla</button>

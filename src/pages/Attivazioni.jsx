@@ -4,22 +4,83 @@ import "../styles/main.css";
 import OffertaCard from "../components/OffertaCard";
 import DynamicForm from "../components/DynamicForm";
 import "../styles/offerte.css";
-
-const API_URL = process.env.REACT_APP_API_URL || "";
+import api from "../api";
 
 export default function Attivazioni() {
   const navigate = useNavigate();
   const [operatori, setOperatori] = useState([]);
+  const [operatoriLoading, setOperatoriLoading] = useState(true);
+  const [operatoriError, setOperatoriError] = useState("");
   const [operatore, setOperatore] = useState("");
   const [tipologie, setTipologie] = useState([]);
   const [tipologia, setTipologia] = useState("");
   const [tipologieLoading, setTipologieLoading] = useState(false);
   const [tipologieError, setTipologieError] = useState("");
   const [offerte, setOfferte] = useState([]);
+  const [offerteLoading, setOfferteLoading] = useState(false);
+  const [offerteError, setOfferteError] = useState("");
   const [offerta, setOfferta] = useState("");
   // SKY logic
   const [skyType, setSkyType] = useState("");
 
+  // Dynamic form template state
+  const [template, setTemplate] = useState(null);
+  const [templateLoading, setTemplateLoading] = useState(false);
+  const [templateError, setTemplateError] = useState("");
+
+  // Fetch template when offer is selected
+  useEffect(() => {
+    if (!offerta) {
+      setTemplate(null);
+      setTemplateLoading(false);
+      setTemplateError("");
+      return;
+    }
+    const selected = offerte.find(o => (o.id || o.value || o.ID || o) === offerta);
+    if (!selected) return;
+    setTemplate(null);
+    setTemplateLoading(true);
+    setTemplateError("");
+    api.get(`/templates/${selected.id || selected.value || selected.ID || selected}`)
+      .then(data => {
+        setTemplate(data);
+        setTemplateLoading(false);
+      })
+      .catch(err => {
+        setTemplate(null);
+        setTemplateError("Errore nel caricamento del template: " + (err?.message || ''));
+        setTemplateLoading(false);
+      });
+  }, [offerta, offerte]);
+
+  // Backend integration for dynamic form submission
+  const [formSubmissionLoading, setFormSubmissionLoading] = useState(false);
+  const [formSubmissionError, setFormSubmissionError] = useState("");
+  const [formSubmissionSuccess, setFormSubmissionSuccess] = useState(false);
+
+  async function handleFormSubmit(formData) {
+    setFormSubmissionLoading(true);
+    setFormSubmissionError("");
+    setFormSubmissionSuccess(false);
+    try {
+      await api.post("/attivazioni", {
+        ...formData,
+        offerta: offerta,
+        operatore,
+        tipologia,
+        skyType,
+      });
+      setFormSubmissionSuccess(true);
+      setOfferta("");
+      setTemplate(null);
+      setTemplateLoading(false);
+      setTemplateError("");
+    } catch (err) {
+      setFormSubmissionError(err.message || "Errore invio dati.");
+    } finally {
+      setFormSubmissionLoading(false);
+    }
+  }
 
   // Redirect se manca il token
   useEffect(() => {
@@ -30,23 +91,22 @@ export default function Attivazioni() {
 
   // Carica operatori all'avvio
   useEffect(() => {
-    fetch(`${API_URL}/operatori`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then(res => res.json())
+    setOperatoriLoading(true);
+    setOperatoriError("");
+    api.get("/operatori")
       .then(data => {
-        console.log('[DEBUG] operatori fetch:', data);
         setOperatori(Array.isArray(data) ? data : []);
+        setOperatoriLoading(false);
       })
       .catch(err => {
         setOperatori([]);
-        console.error('[DEBUG] errore fetch operatori:', err);
+        setOperatoriError("Errore nel caricamento operatori: " + (err?.message || ''));
+        setOperatoriLoading(false);
       });
   }, []);
 
   // Carica tipologie quando cambia operatore
   useEffect(() => {
-    // Se SKY, fetch tipologie solo se è selezionato anche il tipo SKY
     if (!operatore || (operatore.toUpperCase().includes('SKY') && !skyType)) return;
     setTipologie([]);
     setTipologia("");
@@ -55,17 +115,9 @@ export default function Attivazioni() {
 
     setTipologieLoading(true);
     setTipologieError("");
-    // Se SKY, usa skyType come parametro operatore; altrimenti usa operatore
     const paramOperatore = operatore.toUpperCase().includes('SKY') ? skyType : operatore;
-    fetch(`${API_URL}/tipologie?operatore=${encodeURIComponent(paramOperatore)}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Errore fetch tipologie: ' + res.status);
-        return res.json();
-      })
+    api.get(`/tipologie?operatore=${encodeURIComponent(paramOperatore)}`)
       .then(data => {
-        console.log('[DEBUG] tipologie fetch:', data);
         setTipologie(Array.isArray(data) ? data : []);
         setTipologieLoading(false);
       })
@@ -73,60 +125,54 @@ export default function Attivazioni() {
         setTipologie([]);
         setTipologieLoading(false);
         setTipologieError("Errore nel caricamento tipologie: " + (err?.message || ''));
-        console.error('[DEBUG] errore fetch tipologie:', err);
       });
   }, [operatore, skyType]);
 
   // Carica offerte quando cambia tipologia o skyType
   useEffect(() => {
-    // Helper per ricavare sempre id numerico se disponibile
     function getOperatoreId(val) {
       if (!val) return '';
-      // Cerca id numerico tra gli operatori
       const found = operatori.find(op => (op.id || op.value || op) === val || op.nome === val || op.label === val);
       if (found && found.id) return found.id;
       if (found && found.value && !isNaN(found.value)) return found.value;
-      // fallback: se già numerico
       if (!isNaN(val)) return val;
       return val;
     }
-    // Operatore SKY: fetch solo se sia skyType che tipologia sono scelti
+    // SKY logic
     if (operatore && operatore.toUpperCase().includes("SKY")) {
       if (!skyType || !tipologia) return;
       setOfferte([]);
       setOfferta("");
-      
-      fetch(`${API_URL}/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-        .then(res => res.json())
+      setOfferteLoading(true);
+      setOfferteError("");
+      api.get(`/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`)
         .then(data => {
-          console.log('[DEBUG] offerte fetch (SKY):', data);
           setOfferte(Array.isArray(data) ? data : []);
+          setOfferteLoading(false);
         })
         .catch(err => {
           setOfferte([]);
-          console.error('[DEBUG] errore fetch offerte (SKY):', err);
+          setOfferteError("Errore nel caricamento offerte: " + (err?.message || ''));
+          setOfferteLoading(false);
         });
       return;
     }
-    // Altri operatori: usa sempre id numerico se disponibile
+    // Altri operatori
     if (!operatore || !tipologia) return;
     setOfferte([]);
     setOfferta("");
-    
+    setOfferteLoading(true);
+    setOfferteError("");
     const operatoreId = getOperatoreId(operatore);
-    fetch(`${API_URL}/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
-      .then(res => res.json())
+    api.get(`/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`)
       .then(data => {
-        console.log('[DEBUG] offerte fetch:', data);
         setOfferte(Array.isArray(data) ? data : []);
+        setOfferteLoading(false);
       })
       .catch(err => {
         setOfferte([]);
-        console.error('[DEBUG] errore fetch offerte:', err);
+        setOfferteError("Errore nel caricamento offerte: " + (err?.message || ''));
+        setOfferteLoading(false);
       });
   }, [operatore, tipologia, skyType, operatori]);
 
@@ -228,16 +274,37 @@ export default function Attivazioni() {
   {offerte.length === 0 ? (
     <div style={{padding:'8px 0', color:'#888'}}>Nessuna offerta disponibile</div>
   ) : (
-    // Se è selezionata un'offerta, mostra DynamicForm, altrimenti mostra la griglia offerte
     offerta && offerta !== "" ? (
-      <DynamicForm
-        offerta={offerte.find(o => (o.id || o.value || o.ID || o) === offerta)}
-        onClose={() => {
-          setOfferta("");
-          
-        }}
-      />
-    ) : (
+            <>
+              {formSubmissionSuccess && (
+                <div style={{background:'#d4edda',color:'#155724',padding:'12px',borderRadius:'6px',marginBottom:'12px'}}>Attivazione inviata con successo!</div>
+              )}
+              {formSubmissionError && (
+                <div style={{background:'#f8d7da',color:'#721c24',padding:'12px',borderRadius:'6px',marginBottom:'12px'}}>{formSubmissionError}</div>
+              )}
+              {formSubmissionLoading && (
+                <div style={{padding:'8px 0'}}>Invio dati in corso...</div>
+              )}
+              {templateLoading ? (
+                <div style={{padding:'8px 0'}}>Caricamento form dinamico...</div>
+              ) : templateError ? (
+                <div style={{color:'red', padding:'8px 0'}}>{templateError}</div>
+              ) : template ? (
+                <DynamicForm
+                  offerta={offerte.find(o => (o.id || o.value || o.ID || o) === offerta)}
+                  template={template}
+                  templateLoading={formSubmissionLoading}
+                  onSubmit={handleFormSubmit}
+                  onClose={() => {
+                    setOfferta("");
+                    setTemplate(null);
+                    setTemplateLoading(false);
+                    setTemplateError("");
+                  }}
+                />
+              ) : null}
+            </>
+          ) : (
       <div className="offerte-grid">
         {offerte.map(o => (
           <OffertaCard
@@ -246,7 +313,6 @@ export default function Attivazioni() {
             selected={false}
             onSelect={() => {
               setOfferta(o.id || o.value || o.ID || o);
-              
             }}
           />
         ))}
