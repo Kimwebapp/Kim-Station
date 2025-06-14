@@ -1,5 +1,6 @@
+import "./Home.css"; // assicurati che gli stili siano aggiornati secondo il nuovo markup
 import React, { useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 // COMPONENTE ORDINI
 function OrdiniCard() {
@@ -108,6 +109,7 @@ function OrdiniCard() {
 
 // COMPONENTE PRINCIPALE HOME
 function Home() {
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,43 +128,43 @@ function Home() {
         </div>
         <nav className="sidebar-menu">
           <ul>
-            <li className="active">
+            <li className={location.pathname === "/" ? "active" : ""}>
               <Link to="/">
                 <span className="icon"><img src="/Icons/Dashboard.png" alt="Dashboard" /></span>
                 Home
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/attivazioni") ? "active" : ""}>
               <Link to="/attivazioni">
                 <span className="icon"><img src="/Icons/Attivazioni.png" alt="Attivazioni" /></span>
                 Attivazioni
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/prodotti") ? "active" : ""}>
               <Link to="/prodotti">
                 <span className="icon"><img src="/Icons/Prodotti.png" alt="Prodotti" /></span>
                 Prodotti
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/reportistica") ? "active" : ""}>
               <Link to="/reportistica">
                 <span className="icon"><img src="/Icons/Report.png" alt="Reportistica" /></span>
                 Reportistica
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/assistenza") ? "active" : ""}>
               <Link to="/assistenza">
                 <span className="icon"><img src="/Icons/Assistenza.png" alt="Assistenza" /></span>
                 Assistenza
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/documentazione") ? "active" : ""}>
               <Link to="/documentazione">
                 <span className="icon"><img src="/Icons/Documentazione.png" alt="Documentazione" /></span>
                 Documentazione
               </Link>
             </li>
-            <li>
+            <li className={location.pathname.startsWith("/chatbot") ? "active" : ""}>
               <Link to="/chatbot">
                 <span className="icon"><img src="/Icons/ChatBot.png" alt="ChatBot" /></span>
                 ChatBot
@@ -368,6 +370,7 @@ function AndamentoMensileCard() {
           chartInstance.current.destroy();
         }
 
+        if (!chartRef.current) return; // canvas non ancora montato
         const ctx = chartRef.current.getContext("2d");
         chartInstance.current = new Chart(ctx, {
           type: "line",
