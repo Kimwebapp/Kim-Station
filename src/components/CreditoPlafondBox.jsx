@@ -9,7 +9,6 @@ export default function CreditoPlafondBox() {
   const [errore, setErrore] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [importo, setImporto] = useState(null);
-  const [msgPagamento, setMsgPagamento] = useState("");
   const [pagamentoInCorso, setPagamentoInCorso] = useState(false);
 
   // Funzione per aggiornare il credito dopo la ricarica
@@ -45,41 +44,6 @@ export default function CreditoPlafondBox() {
     fetchCredito();
   }, []);
 
-  // Handler per la ricarica simulata (POST /api/ricarica-plafond)
-  const handleRicarica = async () => {
-    setPagamentoInCorso(true);
-    setMsgPagamento("");
-    try {
-      const token = window.localStorage.getItem("token");
-      if (!token) throw new Error("Token mancante");
-      // Simulazione chiamata POST (in reale: invio a Stripe, qui solo demo)
-      const res = await fetch("/api/ricarica-plafond", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount: importo }),
-      });
-      if (!res.ok) throw new Error("Errore HTTP: " + res.status);
-      const data = await res.json();
-      if (data.success || data.status === 'ok') {
-        setMsgPagamento("Pagamento riuscito! Credito aggiornato.");
-        fetchCredito();
-        setTimeout(() => {
-          setShowModal(false);
-          setMsgPagamento("");
-          setImporto(null);
-        }, 1500);
-      } else {
-        throw new Error(data.error || "Pagamento non completato");
-      }
-    } catch (e) {
-      setMsgPagamento("Errore: " + (e.message || e));
-    } finally {
-      setPagamentoInCorso(false);
-    }
-  };
 
   if (window.localStorage.getItem("agenteNome")) return null;
 

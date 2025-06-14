@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 export default function StripeRicaricaModal({ importo, onClose, onSuccess, onError, pagamentoInCorso, setPagamentoInCorso }) {
   const stripe = useStripe();
