@@ -89,17 +89,17 @@ export default function Attivazioni() {
 
   // Carica operatori all'avvio
   useEffect(() => {
-    setOperatoriLoading(true);
-    setOperatoriError("");
+    // setOperatoriLoading rimossatrue);
+    // setOperatoriError rimossa"");
     api.get("/operatori")
       .then(data => {
         setOperatori(Array.isArray(data) ? data : []);
-        setOperatoriLoading(false);
+        // setOperatoriLoading rimossafalse);
       })
       .catch(err => {
         setOperatori([]);
-        setOperatoriError("Errore nel caricamento operatori: " + (err?.message || ''));
-        setOperatoriLoading(false);
+        // setOperatoriError rimossa"Errore nel caricamento operatori: " + (err?.message || ''));
+        // setOperatoriLoading rimossafalse);
       });
   }, []);
 
@@ -141,17 +141,17 @@ export default function Attivazioni() {
       if (!skyType || !tipologia) return;
       setOfferte([]);
       setOfferta("");
-      setOfferteLoading(true);
-      setOfferteError("");
+      // setOfferteLoading rimossatrue);
+      // setOfferteError rimossa"");
       api.get(`/offerte?operatore=${encodeURIComponent(skyType)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`)
         .then(data => {
           setOfferte(Array.isArray(data) ? data : []);
-          setOfferteLoading(false);
+          // setOfferteLoading rimossafalse);
         })
         .catch(err => {
           setOfferte([]);
-          setOfferteError("Errore nel caricamento offerte: " + (err?.message || ''));
-          setOfferteLoading(false);
+          // setOfferteError rimossa"Errore nel caricamento offerte: " + (err?.message || ''));
+          // setOfferteLoading rimossafalse);
         });
       return;
     }
@@ -159,18 +159,18 @@ export default function Attivazioni() {
     if (!operatore || !tipologia) return;
     setOfferte([]);
     setOfferta("");
-    setOfferteLoading(true);
-    setOfferteError("");
+    // setOfferteLoading rimossatrue);
+    // setOfferteError rimossa"");
     const operatoreId = getOperatoreId(operatore);
     api.get(`/offerte?operatore=${encodeURIComponent(operatoreId)}&tipologia=${encodeURIComponent(tipologia)}&from=attivazioni`)
       .then(data => {
         setOfferte(Array.isArray(data) ? data : []);
-        setOfferteLoading(false);
+        // setOfferteLoading rimossafalse);
       })
       .catch(err => {
         setOfferte([]);
-        setOfferteError("Errore nel caricamento offerte: " + (err?.message || ''));
-        setOfferteLoading(false);
+        // setOfferteError rimossa"Errore nel caricamento offerte: " + (err?.message || ''));
+        // setOfferteLoading rimossafalse);
       });
   }, [operatore, tipologia, skyType, operatori]);
 
