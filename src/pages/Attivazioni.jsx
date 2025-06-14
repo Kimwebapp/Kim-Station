@@ -73,7 +73,7 @@ export default function Attivazioni() {
         setTipologieError("Errore nel caricamento tipologie: " + (err?.message || ''));
         console.error('[DEBUG] errore fetch tipologie:', err);
       });
-  }, [operatore]);
+  }, [operatore, skyType]);
 
   // Carica offerte quando cambia tipologia o skyType
   useEffect(() => {
