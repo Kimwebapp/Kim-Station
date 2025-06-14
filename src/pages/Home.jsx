@@ -174,11 +174,8 @@ const Home = () => {
                 <h1 className="welcome">Benvenuto,</h1>
                 <div className="welcome-name" id="welcome-title"></div>
               </div>
-              <div className="credito-section" id="box-credito-plafond">
-                <span className="credito-label">
-                  CREDITO PLAFOND: <span id="credito-plafond-valore">...</span>
-                </span>
-                <button id="btn-ricarica-plafond" className="btn-ricarica" disabled>Inizializzazione...</button>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:16,minHeight:38}}>
+                <CreditoPlafondBox />
               </div>
             </div>
 
