@@ -89,20 +89,38 @@ export default function DynamicForm({ offerta, onClose }) {
     setFormData({});
     // Recupera il template: puoi cambiare endpoint se necessario
     const templateName = offerta.TemplateDatiOfferta || offerta.template || offerta.Template;
+    const token = localStorage.getItem("token");
+    console.log('[DEBUG][DynamicForm] Token:', token);
+    console.log('[DEBUG][DynamicForm] Template name:', templateName);
     fetch(`/api/template-offerta/${encodeURIComponent(templateName)}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Errore fetch template: " + res.status);
+      .then(async res => {
+        console.log('[DEBUG][DynamicForm] Fetch response:', res.status, res.statusText, res.headers);
+        if (!res.ok) {
+          let errorBody = '';
+          try { errorBody = await res.text(); } catch {}
+          console.error('[DEBUG][DynamicForm] Fetch error body:', errorBody);
+          if (res.status === 401) {
+            setError("Non autorizzato (401). Il token è mancante, scaduto o non valido. Effettua di nuovo il login.\n" + errorBody);
+            setLoading(false);
+            return;
+          }
+          setError("Errore fetch template: " + res.status + " " + res.statusText + "\n" + errorBody);
+          setLoading(false);
+          return;
+        }
         return res.json();
       })
       .then(data => {
+        if (!data) return;
         setTemplate(data);
         setLoading(false);
       })
       .catch(err => {
         setError("Errore caricamento template: " + (err?.message || ""));
         setLoading(false);
+        console.error('[DEBUG][DynamicForm] Catch error:', err);
       });
   }, [offerta]);
 
