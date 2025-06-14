@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { handleAuthError } from "../auth";
 import UltimeAttivazioni from "../components/UltimeAttivazioni";
 import CreditoPlafondBox from "../components/CreditoPlafondBox";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // COMPONENTE ORDINI
 function OrdiniCard() {
@@ -113,7 +113,7 @@ function OrdiniCard() {
 
 // COMPONENTE PRINCIPALE HOME
 function Home() {
-  const location = useLocation();
+
   const navigate = useNavigate();
 
   useEffect(() => {
