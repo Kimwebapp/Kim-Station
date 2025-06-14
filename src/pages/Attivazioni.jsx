@@ -5,6 +5,8 @@ import OffertaCard from "../components/OffertaCard";
 import DynamicForm from "../components/DynamicForm";
 import "../styles/offerte.css";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 export default function Attivazioni() {
   const navigate = useNavigate();
   const [operatori, setOperatori] = useState([]);
