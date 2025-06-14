@@ -1,13 +1,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
 import Attivazioni from "./pages/Attivazioni";
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import Layout from "./components/Layout";
 import RequireAuth from "./components/RequireAuth";
 import Assistenza from "./pages/Assistenza";
-import Prodotti from "./pages/Prodotti";
+
 import Documentazione from "./pages/Documentazione";
 // import Ricariche from "./pages/Ricariche"; // Da creare
 import "./App.css";

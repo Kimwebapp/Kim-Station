@@ -9,16 +9,14 @@ import api from "../api";
 export default function Attivazioni() {
   const navigate = useNavigate();
   const [operatori, setOperatori] = useState([]);
-  const [operatoriLoading, setOperatoriLoading] = useState(true);
-  const [operatoriError, setOperatoriError] = useState("");
+  
   const [operatore, setOperatore] = useState("");
   const [tipologie, setTipologie] = useState([]);
   const [tipologia, setTipologia] = useState("");
   const [tipologieLoading, setTipologieLoading] = useState(false);
   const [tipologieError, setTipologieError] = useState("");
   const [offerte, setOfferte] = useState([]);
-  const [offerteLoading, setOfferteLoading] = useState(false);
-  const [offerteError, setOfferteError] = useState("");
+  
   const [offerta, setOfferta] = useState("");
   // SKY logic
   const [skyType, setSkyType] = useState("");

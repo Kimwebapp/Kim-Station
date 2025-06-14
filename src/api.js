@@ -55,7 +55,7 @@ export function del(path, options) {
   return apiRequest(path, { ...options, method: "DELETE" });
 }
 
-export default {
+const apiExport = {
   get,
   post,
   put,

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import FileUploadField from "./FileUploadField";
-const API_URL = process.env.REACT_APP_API_URL || "";
 
 // Campo generico per input dinamici
 function DynamicField({ campo, value, onChange }) {

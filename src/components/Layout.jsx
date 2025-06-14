@@ -34,12 +34,12 @@ export default function Layout({ children }) {
                 {sidebarLinks.map((link, idx) => (
                   <li key={link.to} className={location.pathname === link.to ? "active" : ""}>
                     {link.to === "#" ? (
-                      <a href="#" onClick={link.onClick}>
+                      <button type="button" className="fake-link" onClick={link.onClick}>
                         <span className="icon">
                           <img src={link.icon} alt={link.iconAlt || "icon"} />
                         </span>
                         {link.label}
-                      </a>
+                      </button>
                     ) : (
                       <Link to={link.to} tabIndex={0}>
                         <span className="icon">
