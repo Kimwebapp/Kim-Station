@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 // COMPONENTE ORDINI
@@ -173,7 +173,7 @@ function ObiettiviCard() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     let ignore = false;
     async function fetchObiettivi() {
       setLoading(true);
@@ -203,7 +203,7 @@ function ObiettiviCard() {
     return () => { ignore = true; };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!operatore) return;
     async function filtraObiettivi() {
       setLoading(true);
@@ -293,12 +293,12 @@ function ObiettiviCard() {
 }
 
 function AndamentoMensileCard() {
-  const chartRef = React.useRef(null);
+  const chartRef = useRef(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [chartInstance, setChartInstance] = React.useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let ignore = false;
 
     async function fetchAndamento() {
