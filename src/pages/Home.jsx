@@ -298,6 +298,7 @@ function AndamentoMensileCard() {
   const [error, setError] = React.useState("");
   const [chartInstance, setChartInstance] = React.useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     let ignore = false;
 
