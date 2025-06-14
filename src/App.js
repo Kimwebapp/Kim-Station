@@ -19,7 +19,7 @@ function App() {
         <Route path="/Account/Reset" element={<ResetPassword />} />
         <Route
           path="/"
-
+          element={<RequireAuth><Layout><Attivazioni /></Layout></RequireAuth>}
         />
         <Route
           path="/attivazioni"
