@@ -296,7 +296,7 @@ function AndamentoMensileCard() {
   const chartRef = useRef(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [chartInstance, setChartInstance] = React.useState(null);
+  const chartInstance = useRef(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -324,12 +324,12 @@ function AndamentoMensileCard() {
 
         const Chart = (await import("chart.js/auto")).default;
 
-        if (chartInstance) {
-          chartInstance.destroy();
+        if (chartInstance.current) {
+          chartInstance.current.destroy();
         }
 
         const ctx = chartRef.current.getContext("2d");
-        const newChart = new Chart(ctx, {
+        chartInstance.current = new Chart(ctx, {
           type: "line",
           data: {
             labels,
@@ -353,7 +353,7 @@ function AndamentoMensileCard() {
           }
         });
 
-        setChartInstance(newChart);
+
       } catch (err) {
         setError(err.message || "Errore nel caricamento del grafico");
       } finally {
@@ -365,7 +365,7 @@ function AndamentoMensileCard() {
 
     return () => {
       ignore = true;
-      if (chartInstance) chartInstance.destroy();
+      if (chartInstance.current) chartInstance.current.destroy();
     };
   }, []);
 
