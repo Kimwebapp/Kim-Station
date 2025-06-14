@@ -1,5 +1,7 @@
 import "./Home.css"; // assicurati che gli stili siano aggiornati secondo il nuovo markup
 import React, { useEffect, useRef } from "react";
+import { handleAuthError } from "../auth";
+import UltimeAttivazioni from "../components/UltimeAttivazioni";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
 // COMPONENTE ORDINI
@@ -18,6 +20,7 @@ function OrdiniCard() {
         const response = await fetch("/api/ultimi-ordini", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
         const data = await response.json();
         const ordiniArr = Array.isArray(data) ? data : (data.ordini || data.Ordini || []);
@@ -190,16 +193,19 @@ function Home() {
           <div className="welcome-container">
             <div className="welcome-content">
               <h1 className="welcome">Benvenuto,</h1>
-              <div className="welcome-name" id="welcome-title"></div>
+              <div className="welcome-name" id="welcome-title">
+                {localStorage.getItem("dealerName") || localStorage.getItem("agenteNome") || "Utente"}
+              </div>
             </div>
           </div>
           <div className="credito-container">
-            <span className="credito-label">CREDITO PLAFOND: <b>55,00 €</b></span>
-            <button className="ricarica-btn">Ricarica</button>
+            {/* CreditoPlafondBox shows dynamic credit and recharge button */}
+            <CreditoPlafondBox />
           </div>
         </div>
         <div className="dashboard-grid new-dashboard-grid">
           <OrdiniCard />
+          <UltimeAttivazioni />
           <ObiettiviCard />
           <AndamentoMensileCard />
         </div>
@@ -226,6 +232,7 @@ function ObiettiviCard() {
         const response = await fetch("/api/obiettivi", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error("Errore HTTP: " + response.status);
         const data = await response.json();
         const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
@@ -256,6 +263,7 @@ function ObiettiviCard() {
         const response = await fetch("/api/obiettivi", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error("Errore HTTP: " + response.status);
         const data = await response.json();
         const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
@@ -353,6 +361,7 @@ function AndamentoMensileCard() {
         const response = await fetch("/api/andamento", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error("Errore HTTP: " + response.status);
         const data = await response.json();
 

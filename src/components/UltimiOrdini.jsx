@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { handleAuthError } from "../auth";
 
 // Mappa stato numerico/testuale → testo e classe CSS
 const statiNumerici = {
@@ -48,6 +49,7 @@ export default function UltimiOrdini() {
         const response = await fetch("/api/ultimi-ordini", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
         const data = await response.json();
         let ordini = [];
@@ -73,37 +75,38 @@ export default function UltimiOrdini() {
     <div className="ultimi-ordini-card">
       <h3>Ultimi 5 Ordini</h3>
       <div style={{overflowX:'auto'}}>
-      <table className="table table-sm table-bordered">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Prodotto</th>
-            <th>Tipo</th>
-            <th>Importo</th>
-            <th>Stato</th>
-          </tr>
-        </thead>
-        <tbody id="corpo-tabella-ordini">
-          {loading ? (
-            <tr><td colSpan={5} className="text-center text-muted"><i>Caricamento in corso...</i></td></tr>
-          ) : errore ? (
-            <tr><td colSpan={5} className="text-center text-danger">{errore}</td></tr>
-          ) : ordini.length === 0 ? (
-            <tr><td colSpan={5} className="text-center text-muted"><i>Nessun ordine trovato</i></td></tr>
-          ) : (
-            ordini.map((ordine, idx) => (
-              <tr key={ordine.IDOrdineProdotto || idx}>
-                <td>{ordine.Data}</td>
-                <td>{ordine.Prodotto}</td>
-                <td>{ordine.Tipo}</td>
-                <td>{typeof ordine.Importo === "number" ? ordine.Importo.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : ordine.Importo}</td>
-                <td>{formattaStatoOrdine(ordine.Stato)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+        <table className="new-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Prodotto</th>
+              <th>Tipo</th>
+              <th>Importo</th>
+              <th>Stato</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabella-ordini">
+            {loading ? (
+              <tr><td colSpan={5} className="text-center text-muted"><i>Caricamento in corso...</i></td></tr>
+            ) : errore ? (
+              <tr><td colSpan={5} className="text-center text-danger">{errore}</td></tr>
+            ) : ordini.length === 0 ? (
+              <tr><td colSpan={5} className="text-center text-muted"><i>Nessun ordine trovato</i></td></tr>
+            ) : (
+              ordini.map((ordine, idx) => (
+                <tr key={ordine.IDOrdineProdotto || idx}>
+                  <td>{ordine.Data}</td>
+                  <td>{ordine.Prodotto}</td>
+                  <td>{ordine.Tipo}</td>
+                  <td>{typeof ordine.Importo === "number" ? ordine.Importo.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €" : ordine.Importo}</td>
+                  <td>{formattaStatoOrdine(ordine.Stato)}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
+

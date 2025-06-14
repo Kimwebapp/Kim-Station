@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { handleAuthError } from "../auth";
 
 const OPERATORI = [
   { value: "all", label: "Tutti" },
@@ -49,6 +50,7 @@ export default function UltimeAttivazioni() {
         const response = await fetch(endpoint + params, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return;
         if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
         const data = await response.json();
         let attiv = [];
@@ -90,7 +92,7 @@ export default function UltimeAttivazioni() {
         </div>
       )}
       <div style={{ overflowX: "auto" }}>
-        <table className="table table-sm table-bordered">
+        <table className="new-table">
           <thead>
             <tr>
               <th>Data</th>
@@ -124,3 +126,4 @@ export default function UltimeAttivazioni() {
     </div>
   );
 }
+
