@@ -35,6 +35,7 @@ function CheckoutForm({ onSuccess, onError }) {
           items: carrello,
         }),
       });
+      if (handleAuthError(response)) return; // Use handleAuthError
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Errore creazione PaymentIntent");
       const clientSecret = data.clientSecret;

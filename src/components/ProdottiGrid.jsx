@@ -23,6 +23,7 @@ export default function ProdottiGrid({ segmento = null, dealerSelezionato = null
         const response = await fetch(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (handleAuthError(response)) return; // Use handleAuthError
         if (!response.ok) throw new Error(`Errore HTTP: ${response.status}`);
         const data = await response.json();
         setProdotti(Array.isArray(data) ? data : data.prodotti || []);

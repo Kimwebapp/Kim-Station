@@ -124,79 +124,13 @@ function Home() {
   }, [navigate]);
 
   return (
-    <div className="dashboard-wrapper">
-      {/* Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-          <img src="/Logo/logo_white_def.png" alt="kim" />
-        </div>
-        <nav className="sidebar-menu">
-          <ul>
-            <li className={location.pathname === "/" ? "active" : ""}>
-              <Link to="/">
-                <span className="icon"><img src="/Icons/Dashboard.png" alt="Dashboard" /></span>
-                Home
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/attivazioni") ? "active" : ""}>
-              <Link to="/attivazioni">
-                <span className="icon"><img src="/Icons/Attivazioni.png" alt="Attivazioni" /></span>
-                Attivazioni
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/prodotti") ? "active" : ""}>
-              <Link to="/prodotti">
-                <span className="icon"><img src="/Icons/Prodotti.png" alt="Prodotti" /></span>
-                Prodotti
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/reportistica") ? "active" : ""}>
-              <Link to="/reportistica">
-                <span className="icon"><img src="/Icons/Report.png" alt="Reportistica" /></span>
-                Reportistica
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/assistenza") ? "active" : ""}>
-              <Link to="/assistenza">
-                <span className="icon"><img src="/Icons/Assistenza.png" alt="Assistenza" /></span>
-                Assistenza
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/documentazione") ? "active" : ""}>
-              <Link to="/documentazione">
-                <span className="icon"><img src="/Icons/Documentazione.png" alt="Documentazione" /></span>
-                Documentazione
-              </Link>
-            </li>
-            <li className={location.pathname.startsWith("/chatbot") ? "active" : ""}>
-              <Link to="/chatbot">
-                <span className="icon"><img src="/Icons/ChatBot.png" alt="ChatBot" /></span>
-                ChatBot
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        <div className="sidebar-bottom">
-          <button className="logout-btn" onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("dealerName");
-            localStorage.removeItem("agenteNome");
-            window.location.href = "/login";
-          }}>
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="main-content">
-        <div className="dashboard-header">
-          <div className="welcome-container">
-            <div className="welcome-content">
-              <h1 className="welcome">Benvenuto,</h1>
-              <div className="welcome-name" id="welcome-title">
-                {localStorage.getItem("dealerName") || localStorage.getItem("agenteNome") || "Utente"}
-              </div>
+    <>
+      <div className="dashboard-header">
+        <div className="welcome-container">
+          <div className="welcome-content">
+            <h1 className="welcome">Benvenuto,</h1>
+            <div className="welcome-name" id="welcome-title">
+              {localStorage.getItem("dealerName") || localStorage.getItem("agenteNome") || "Utente"}
             </div>
           </div>
           <div className="credito-container">
@@ -204,14 +138,14 @@ function Home() {
             <CreditoPlafondBox />
           </div>
         </div>
-        <div className="dashboard-grid new-dashboard-grid">
-          <OrdiniCard />
-          <UltimeAttivazioni />
-          <ObiettiviCard />
-          <AndamentoMensileCard />
-        </div>
-      </main>
-    </div>
+      </div>
+      <div className="dashboard-grid new-dashboard-grid">
+        <OrdiniCard />
+        <UltimeAttivazioni />
+        <ObiettiviCard />
+        <AndamentoMensileCard />
+      </div>
+    </>
   );
 }
 

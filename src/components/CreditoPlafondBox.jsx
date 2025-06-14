@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { handleAuthError } from "../auth";
 import { Elements } from '@stripe/react-stripe-js';
 import stripePromise from '../stripe';
 import StripeRicaricaModal from './StripeRicaricaModal';
@@ -24,8 +25,12 @@ export default function CreditoPlafondBox() {
     fetch("/api/credito-plafond", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (handleAuthError(res)) return null;
+        return res.json();
+      })
       .then((data) => {
+        if (!data) return;
         if (typeof data.credito === "number") {
           setCredito(data.credito);
         } else {
@@ -49,7 +54,7 @@ export default function CreditoPlafondBox() {
 
   let display = "...";
   if (loading) display = "...";
-  else if (errore) display = "Errore";
+  else if (errore) display = "Sessione scaduta o errore di rete";
   else if (typeof credito === "number")
     display = credito.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
   else display = "0.00 €";

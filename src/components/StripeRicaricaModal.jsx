@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { handleAuthError } from "../auth";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 export default function StripeRicaricaModal({ importo, onClose, onSuccess, onError, pagamentoInCorso, setPagamentoInCorso }) {
@@ -21,6 +22,7 @@ export default function StripeRicaricaModal({ importo, onClose, onSuccess, onErr
         },
         body: JSON.stringify({ amount: importo }),
       });
+      if (handleAuthError(res)) return;
       const data = await res.json();
       if (!res.ok || !data.clientSecret) throw new Error(data.error || "Errore creazione PaymentIntent");
       // 2. Conferma pagamento con Stripe
