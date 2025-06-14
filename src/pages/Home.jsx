@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import CreditoPlafondBox from "../components/CreditoPlafondBox";
 import "../styles/main.css";
 
 const OPERATORI = [
@@ -88,6 +89,9 @@ const Home = () => {
     <div className="main-container">
       <div className="container">
         <div className="dashboard-wrapper">
+        <div style={{display:'flex',justifyContent:'flex-end',alignItems:'center',margin:'16px 0 0 0'}}>
+          <CreditoPlafondBox />
+        </div>
           {/* Sidebar ... (come prima) */}
           <aside className="sidebar">
             <div className="sidebar-logo">
