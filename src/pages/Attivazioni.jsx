@@ -44,15 +44,18 @@ export default function Attivazioni() {
 
   // Carica tipologie quando cambia operatore
   useEffect(() => {
-    if (!operatore) return;
+    // Se SKY, fetch tipologie solo se è selezionato anche il tipo SKY
+    if (!operatore || (operatore.toUpperCase().includes('SKY') && !skyType)) return;
     setTipologie([]);
     setTipologia("");
     setOfferte([]);
     setOfferta("");
-    
+
     setTipologieLoading(true);
     setTipologieError("");
-    fetch(`/api/tipologie?operatore=${encodeURIComponent(operatore)}`, {
+    // Se SKY, usa skyType come parametro operatore; altrimenti usa operatore
+    const paramOperatore = operatore.toUpperCase().includes('SKY') ? skyType : operatore;
+    fetch(`/api/tipologie?operatore=${encodeURIComponent(paramOperatore)}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     })
       .then(res => {
