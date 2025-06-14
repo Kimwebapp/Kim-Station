@@ -2,6 +2,7 @@ import "./Home.css"; // assicurati che gli stili siano aggiornati secondo il nuo
 import React, { useEffect, useRef } from "react";
 import { handleAuthError } from "../auth";
 import UltimeAttivazioni from "../components/UltimeAttivazioni";
+import CreditoPlafondBox from "../components/CreditoPlafondBox";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
 // COMPONENTE ORDINI
