@@ -12,22 +12,6 @@ const OPERATORI = [
   { value: "1MOBILE", label: "1MOBILE" },
 ];
 
-function formattaStatoAttivazione(stato) {
-  if (!stato) return <span className="status-badge secondary">-</span>;
-  const classi = {
-    "ATTIVATO": "success",
-    "ANNULLATO": "danger",
-    "DA_ELABORARE": "warning",
-    "CONFERMATO": "info",
-    "IN ATTESA FIRMA": "warning",
-    "IN ATTESA PAGAMENTO": "danger",
-    "IN ATTESA": "warning",
-    "SPEDITO": "info",
-    "SCONOSCIUTO": "secondary",
-  };
-  const key = stato.replace(/_/g, " ");
-  return <span className={`status-badge ${classi[key] || "secondary"}`}>{key}</span>;
-}
 
 export default function UltimeAttivazioni() {
   const [attivazioni, setAttivazioni] = useState([]);
