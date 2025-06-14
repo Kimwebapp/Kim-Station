@@ -1,6 +1,6 @@
 import "./Home.css"; // assicurati che gli stili siano aggiornati secondo il nuovo markup
 import React, { useEffect, useRef } from "react";
-import { handleAuthError } from "src/auth";
+import { handleAuthError } from "../auth";
 import UltimeAttivazioni from "../components/UltimeAttivazioni";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
