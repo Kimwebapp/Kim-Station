@@ -132,7 +132,42 @@ function Home() {
                 Home
               </Link>
             </li>
-            {/* Altri Link */}
+            <li>
+              <Link to="/attivazioni">
+                <span className="icon"><img src="/Icons/Attivazioni.png" alt="Attivazioni" /></span>
+                Attivazioni
+              </Link>
+            </li>
+            <li>
+              <Link to="/prodotti">
+                <span className="icon"><img src="/Icons/Prodotti.png" alt="Prodotti" /></span>
+                Prodotti
+              </Link>
+            </li>
+            <li>
+              <Link to="/reportistica">
+                <span className="icon"><img src="/Icons/Report.png" alt="Reportistica" /></span>
+                Reportistica
+              </Link>
+            </li>
+            <li>
+              <Link to="/assistenza">
+                <span className="icon"><img src="/Icons/Assistenza.png" alt="Assistenza" /></span>
+                Assistenza
+              </Link>
+            </li>
+            <li>
+              <Link to="/documentazione">
+                <span className="icon"><img src="/Icons/Documentazione.png" alt="Documentazione" /></span>
+                Documentazione
+              </Link>
+            </li>
+            <li>
+              <Link to="/chatbot">
+                <span className="icon"><img src="/Icons/ChatBot.png" alt="ChatBot" /></span>
+                ChatBot
+              </Link>
+            </li>
           </ul>
         </nav>
         <div className="sidebar-bottom">
@@ -149,13 +184,18 @@ function Home() {
 
       {/* Main Content */}
       <main className="main-content">
-        <div className="welcome-container">
-          <div className="welcome-content">
-            <h1 className="welcome">Benvenuto,</h1>
-            <div className="welcome-name" id="welcome-title"></div>
+        <div className="dashboard-header">
+          <div className="welcome-container">
+            <div className="welcome-content">
+              <h1 className="welcome">Benvenuto,</h1>
+              <div className="welcome-name" id="welcome-title"></div>
+            </div>
+          </div>
+          <div className="credito-container">
+            <span className="credito-label">CREDITO PLAFOND: <b>55,00 €</b></span>
+            <button className="ricarica-btn">Ricarica</button>
           </div>
         </div>
-
         <div className="dashboard-grid new-dashboard-grid">
           <OrdiniCard />
           <ObiettiviCard />
