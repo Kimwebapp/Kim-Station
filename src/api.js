@@ -61,3 +61,5 @@ const apiExport = {
   put,
   del,
 };
+
+export default apiExport;
