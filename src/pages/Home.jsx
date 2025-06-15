@@ -5,6 +5,137 @@ import UltimeAttivazioni from "../components/UltimeAttivazioni";
 import CreditoPlafondBox from "../components/CreditoPlafondBox";
 import { useNavigate } from "react-router-dom";
 
+// COMPONENTE OBIETTIVI
+function ObiettiviCard() {
+  const [operatori, setOperatori] = React.useState([]);
+  const [operatore, setOperatore] = React.useState("");
+  const [obiettivi, setObiettivi] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  React.useEffect(() => {
+    let ignore = false;
+    async function fetchObiettivi() {
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Token mancante");
+        const response = await fetch("/api/obiettivi", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (handleAuthError(response)) return;
+        if (!response.ok) throw new Error("Errore HTTP: " + response.status);
+        const data = await response.json();
+        const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
+        if (ignore) return;
+        // Unique, non-empty operators
+        const uniqueOperatori = [...new Set(obiettiviData.map(op => op.operatore).filter(Boolean))];
+        setOperatori(uniqueOperatori);
+        if (uniqueOperatori.length > 0) {
+          setOperatore(uniqueOperatori[0]);
+          const found = obiettiviData.find(op => op.operatore === uniqueOperatori[0]);
+          setObiettivi(found ? found.categorie : []);
+        }
+      } catch (err) {
+        if (!ignore) setError(err.message || "Errore sconosciuto");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    fetchObiettivi();
+    return () => { ignore = true; };
+  }, []);
+
+  React.useEffect(() => {
+    if (!operatore) return;
+    async function filtraObiettivi() {
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Token mancante");
+        const response = await fetch("/api/obiettivi", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (handleAuthError(response)) return;
+        if (!response.ok) throw new Error("Errore HTTP: " + response.status);
+        const data = await response.json();
+        const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
+        const operatoreTrovato = obiettiviData.find(op => op.operatore === operatore);
+        setObiettivi(operatoreTrovato ? operatoreTrovato.categorie : []);
+      } catch (err) {
+        setError(err.message || "Errore sconosciuto");
+        setObiettivi([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    filtraObiettivi();
+  }, [operatore]);
+
+  if (localStorage.getItem("agenteNome")) return null; // Nasconde la card agli agenti
+
+  return (
+    <section className="obiettivi-card-inner">
+      <div className="obiettivi-header-row" style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+        <div className="operatore-select-wrapper">
+          <select
+            value={operatore}
+            onChange={e => setOperatore(e.target.value)}
+            style={{ minWidth: 120 }}
+          >
+            {operatori.map((op, idx) => (
+              <option key={idx} value={op}>{op}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {loading ? (
+        <div className="obiettivo-loading">
+          <div className="spinner"></div>
+          <p>Caricamento obiettivi...</p>
+        </div>
+      ) : error ? (
+        <div className="obiettivo-error">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Riprova</button>
+        </div>
+      ) : obiettivi.length === 0 ? (
+        <div className="nessun-risultato">
+          <p>Nessun obiettivo disponibile</p>
+        </div>
+      ) : (
+        <div className="obiettivi-container">
+          {obiettivi.map((obiettivo, idx) => {
+            const progresso = obiettivo.target > 0
+              ? Math.min(Math.round((obiettivo.attuale / obiettivo.target) * 100), 100)
+              : 0;
+            const mancano = obiettivo.mancano > 0
+              ? `Mancano ${obiettivo.mancano}`
+              : "Obiettivo raggiunto!";
+            return (
+              <div className={`obiettivo-card ${progresso >= 100 ? "obiettivo-completato" : ""}`} key={idx}>
+                <div className="obiettivo-header">
+                  <h3>{obiettivo.nome}</h3>
+                  <span>{obiettivo.attuale} / {obiettivo.target}</span>
+                </div>
+                <div className="progress-container">
+                  <div className="progress-bar" style={{ width: `${progresso}%` }}></div>
+                </div>
+                <div className="obiettivo-footer">
+                  <span>{mancano}</span>
+                  <span>{progresso}%</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
 // COMPONENTE ORDINI
 function OrdiniCard() {
   const [ordini, setOrdini] = React.useState([]);
@@ -130,152 +261,59 @@ function Home() {
           <div className="welcome-content">
             <h1 className="welcome">Benvenuto,</h1>
             <div className="welcome-name" id="welcome-title">
-              {localStorage.getItem("dealerName") || localStorage.getItem("agenteNome") || "Utente"}
+              <span style={{ color: '#2563eb', fontWeight: 700 }}>
+                {localStorage.getItem("dealerName") || localStorage.getItem("agenteNome") || "Utente"}
+              </span>
             </div>
           </div>
           <div className="credito-container">
-            {/* CreditoPlafondBox shows dynamic credit and recharge button */}
             <CreditoPlafondBox />
           </div>
         </div>
       </div>
-      <div className="dashboard-grid new-dashboard-grid">
-        <OrdiniCard />
-        <UltimeAttivazioni />
-        <ObiettiviCard />
-        <AndamentoMensileCard />
+      <div className="dashboard-grid new-dashboard-grid dashboard-grid-2x2">
+        <div className="dashboard-grid-item attivazioni-cell">
+          <div className="card card-large attivazioni-card new-card">
+            <div className="card-header">
+              <span className="card-dot" style={{ background: '#2563eb' }}></span>
+              <div className="card-title">Ultime 5 Attivazioni</div>
+            </div>
+            <UltimeAttivazioni />
+          </div>
+        </div>
+        <div className="dashboard-grid-item ordini-cell">
+          <div className="card card-large ordini-card new-card">
+            <div className="card-header">
+              <span className="card-dot" style={{ background: '#2563eb' }}></span>
+              <div className="card-title">Ultimi 5 Ordini</div>
+            </div>
+            <OrdiniCard />
+          </div>
+        </div>
+        <div className="dashboard-grid-item obiettivi-cell">
+          <div className="card card-large obiettivi-card new-card">
+            <div className="card-header">
+              <span className="card-dot" style={{ background: '#2563eb' }}></span>
+              <div className="card-title">Obiettivi</div>
+            </div>
+            <ObiettiviCard />
+          </div>
+        </div>
+        <div className="dashboard-grid-item andamento-cell">
+          <div className="card card-large andamento-card new-card">
+            <div className="card-header">
+              <span className="card-dot" style={{ background: '#2563eb' }}></span>
+              <div className="card-title">Andamento Mensile</div>
+            </div>
+            <AndamentoMensileCard />
+          </div>
+        </div>
       </div>
     </>
   );
 }
 
-function ObiettiviCard() {
-  const [operatori, setOperatori] = React.useState([]);
-  const [operatore, setOperatore] = React.useState("");
-  const [obiettivi, setObiettivi] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
 
-  useEffect(() => {
-    let ignore = false;
-    async function fetchObiettivi() {
-      setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("Token mancante");
-        const response = await fetch("/api/obiettivi", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (handleAuthError(response)) return;
-        if (!response.ok) throw new Error("Errore HTTP: " + response.status);
-        const data = await response.json();
-        const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
-        if (ignore) return;
-        setOperatori(obiettiviData.map(op => op.operatore));
-        if (obiettiviData.length > 0) {
-          setOperatore(obiettiviData[0].operatore);
-          setObiettivi(obiettiviData[0].categorie);
-        }
-      } catch (err) {
-        if (!ignore) setError(err.message || "Errore sconosciuto");
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    }
-    fetchObiettivi();
-    return () => { ignore = true; };
-  }, []);
-
-  useEffect(() => {
-    if (!operatore) return;
-    async function filtraObiettivi() {
-      setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("Token mancante");
-        const response = await fetch("/api/obiettivi", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (handleAuthError(response)) return;
-        if (!response.ok) throw new Error("Errore HTTP: " + response.status);
-        const data = await response.json();
-        const obiettiviData = Array.isArray(data.obiettivi) ? data.obiettivi : [];
-        const operatoreTrovato = obiettiviData.find(op => op.operatore === operatore);
-        setObiettivi(operatoreTrovato ? operatoreTrovato.categorie : []);
-      } catch (err) {
-        setError(err.message || "Errore sconosciuto");
-        setObiettivi([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    filtraObiettivi();
-  }, [operatore]);
-
-  if (localStorage.getItem("agenteNome")) return null; // Nasconde la card agli agenti
-
-  return (
-    <section className="card new-card">
-      <div className="card-header">
-        <div className="card-title">Obiettivi</div>
-        <div className="operatore-select-wrapper">
-          <select
-            value={operatore}
-            onChange={e => setOperatore(e.target.value)}
-          >
-            {operatori.map((op, idx) => (
-              <option key={idx} value={op}>{op}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="obiettivo-loading">
-          <div className="spinner"></div>
-          <p>Caricamento obiettivi...</p>
-        </div>
-      ) : error ? (
-        <div className="obiettivo-error">
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()}>Riprova</button>
-        </div>
-      ) : obiettivi.length === 0 ? (
-        <div className="nessun-risultato">
-          <p>Nessun obiettivo disponibile</p>
-        </div>
-      ) : (
-        <div className="obiettivi-container">
-          {obiettivi.map((obiettivo, idx) => {
-            const progresso = obiettivo.target > 0
-              ? Math.min(Math.round((obiettivo.attuale / obiettivo.target) * 100), 100)
-              : 0;
-            const mancano = obiettivo.mancano > 0
-              ? `Mancano ${obiettivo.mancano}`
-              : "Obiettivo raggiunto!";
-            return (
-              <div className={`obiettivo-card ${progresso >= 100 ? "obiettivo-completato" : ""}`} key={idx}>
-                <div className="obiettivo-header">
-                  <h3>{obiettivo.nome}</h3>
-                  <span>{obiettivo.attuale} / {obiettivo.target}</span>
-                </div>
-                <div className="progress-container">
-                  <div className="progress-bar" style={{ width: `${progresso}%` }}></div>
-                </div>
-                <div className="obiettivo-footer">
-                  <span>{mancano}</span>
-                  <span>{progresso}%</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </section>
-  );
-}
 
 function AndamentoMensileCard() {
   const chartRef = useRef(null);
